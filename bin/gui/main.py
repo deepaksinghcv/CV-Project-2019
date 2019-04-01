@@ -1,16 +1,24 @@
 from tkinter import *
 from tkinter import filedialog
 from PIL import ImageTk, Image
+from skimage import io,color
 import numpy as np
 import sys
-print(sys.version)
+
+# sys.path.append('../')
+from python_exec2 import *
 
 
-# from skimage import io
-# from skimage import filters
-# import matplotlib.pyplot as plt
+####buffer
 
+modelpath='/home/ashishmenon/labpc/oef/cache/forest/model.mat'
+imagepath= '/home/ashishmenon/labpc/oef/BSDS500/data/images/test/41096.jpg'
 
+# E=runOEF(modelpath,imagepath)
+# io.imshow(E,cmap='gray')
+# io.show()
+
+####
 
 
 ####function definitions
@@ -21,7 +29,7 @@ def btnOpenFunction(event):
     print (filename)
 
     try:
-        imageMat = getImage(filename)
+        imageMat,_ = getImage(filename)
 
         #load image into left frame
         for widget in leftFrame.winfo_children():
@@ -32,7 +40,7 @@ def btnOpenFunction(event):
 
         leftFrameLabel = Label(leftFrame,image=imageMat)#,width=480,height=320)
         leftFrameLabel.image=imageMat
-        leftFrameLabel.pack(fill=X)
+        leftFrameLabel.pack()
   
         statusLabel.config(text="Test Image Loaded")
 
@@ -50,11 +58,27 @@ def doNothing(event):
 
 def btnRunFunction(event):
     print("run clicked")
-
+    global modelpath
+    global imagepath
+    print(modelpath)
     filename = filedialog.askopenfilename(initialdir = "./",title = "Select file",filetypes = (("jpeg files","*.jpg"),("png files","*.png"),("all files","*.*")))
     print (filename)
     try:
-        imageMat = getImage(filename)
+        # imageMatPhotoImage,imageMatImage = getImage(filename)
+
+        ##new
+        E=runOEF(modelpath,filename)
+        # io.imshow(E,cmap='gray')
+        # io.show()
+
+        ##
+
+        print("main.py-->",type(E))
+
+        oefImage = ImageTk.PhotoImage(image=Image.fromarray(E.astype('uint8')))
+
+        print(type(oefImage))
+
 
         #load image into left frame
         for widget in middleFrame.winfo_children():
@@ -62,25 +86,24 @@ def btnRunFunction(event):
             
             
         statusLabel.config(text="Loading image...")
-        print(type(imageMat))
+        # print(type(imageMatPhotoImage))
 
-        imageMatCopy = imageMat.copy()
+        # print(imageMatImage.mode)
 
-        npImg = np.array(imageMatCopy)
-        print(type(npImg))
-        print(npImg)
-        npImg = npImg.copy()
-        npImg = npImg+50
+        # npImage = np.array(imageMatImage)
+        # greyNPImage = color.rgb2grey(npImage)
 
-        imageMatNew = ImageTk.PhotoImage(Image.fromarray(npImg))
+        # greyImage = Image.fromarray(greyNPImage)
+        # greyImage.show()
 
-        print(type(imageMat))
+        # print(greyImage.mode)
+        
 
-        middleFrameLabel = Label(middleFrame,image=imageMatNew)#,width=480,height=320)
-        middleFrameLabel.image=imageMatNew
+        middleFrameLabel = Label(middleFrame,image=oefImage)#,width=480,height=320)
+        middleFrameLabel.image=oefImage
         middleFrameLabel.pack(fill=X)
   
-        statusLabel.config(text="Test Image Loaded")
+        statusLabel.config(text="Result Image Loaded")
 
 
 
@@ -91,11 +114,11 @@ def btnRunFunction(event):
         
 
 def getImage(filePath):
-    openedImage = Image.open(filePath)
-    openedImage = openedImage.resize((480, 320), Image.ANTIALIAS)
-    photo = ImageTk.PhotoImage(openedImage)
+    imgImage = Image.open(filePath)
+    # imgImage = imgImage.resize((480, 320), Image.ANTIALIAS)
+    photoImage = ImageTk.PhotoImage(imgImage)
 
-    return photo 
+    return photoImage,imgImage
 
 
 
@@ -103,7 +126,7 @@ def getImage(filePath):
 #### ui definitions
 root = Tk()
 
-root.geometry('1020x340+100+100')
+root.geometry('1200x540+100+100')
 
 leftFrame = Frame(root,bg="red",height=320)
 middleFrame = Frame(root,bg="white",height=320)
@@ -131,15 +154,15 @@ runButton.bind("<Button-1>",btnRunFunction)
 
 
 ##remove this following image or replace it with another image
-openedImage = Image.open("b.jpg")
-openedImage = openedImage.resize((250, 250), Image.ANTIALIAS)
+openedImage = Image.open("./testimages/b.jpg")
+# openedImage = openedImage.resize((250, 250), Image.ANTIALIAS)
 photo = ImageTk.PhotoImage(openedImage)  
 
 
-leftFrameLabel = Label(leftFrame,image=photo,width=480,height=320)#,text="Test Image will be displayed here")
+leftFrameLabel = Label(leftFrame,image=photo)#,width=480,height=320)#,text="Test Image will be displayed here")
 leftFrameLabel.pack(fill=X)
 
-middleFrameLabel = Label(middleFrame,image=photo,width=480,height=320)#text="Result Image will be displayed here")
+middleFrameLabel = Label(middleFrame,image=photo)#,width=480,height=320)#text="Result Image will be displayed here")
 middleFrameLabel.pack(fill=X)
 
 
