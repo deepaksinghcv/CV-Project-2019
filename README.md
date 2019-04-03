@@ -10,6 +10,7 @@ Added the reference paper used for the implementation
 > http://www.eecs.berkeley.edu/Research/Projects/CS/vision/grouping/BSR/BSR_bsds500.tgz
 
 ## Usage:
+	- go to main/ and run the following command:
     python guihomenew.py
     
 ## Information:
